@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:marblever.se)",
+      "WebSearch",
+      "WebFetch(domain:apps.apple.com)",
+      "WebFetch(domain:play.google.com)",
+      "Bash(python -m venv venv)",
+      "Bash(source venv/Scripts/activate)",
+      "Bash(pip install:*)",
+      "Bash(source c:/Users/Ibadullayev/PycharmProjects/marbleverse_quest/venv/Scripts/activate)",
+      "Bash(pip list:*)",
+      "Bash(python bot.py)"
+    ]
+  }
+}

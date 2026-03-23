@@ -1,0 +1,397 @@
+================================================================================
+         MARBLEVERSE: SIRLI SHARLAR SARGUZASHTI — RASMIY O'YIN HUJJATI
+================================================================================
+
+================================================================================
+1. UMUMIY MA'LUMOT
+================================================================================
+
+O'yin nomi:        Sirli Sharlar Sarguzashti
+Platforma:         Marbleverse App (AR) + Telegram Bot (nazorat)
+Ishtirokchilar:    3–5 kishilik jamoalar (8–20 ta jamoa)
+Vaqt:              90 daqiqa (60 daqiqa o'yin + 15 daqiqa final + 15 daqiqa taqdirlash)
+Maqsad:            Tarixiy hududda Marbleverse orqali yashirin AR sharlarni topib,
+                   topshiriqlarni bajarish va eng ko'p ball to'plash.
+
+================================================================================
+2. O'YIN TIZIMI — QANDAY ISHLAYDI
+================================================================================
+
+MARBLEVERSE APP VAZIFASI:
+— Har bir bosqich joyiga AR "Marble" (shar) joylashtiriladi
+— Marble ichida: bosqich raqami, topshiriq matni, maxfiy kod
+— Jamoa hududga yetib kelganda telefonni AR rejimda ochadi
+— Marble topilganda ichidagi ma'lumot ko'rinadi
+— Marble faqat GPS orqali o'sha joyda ko'rinadi (masofadan ochib bo'lmaydi)
+
+TELEGRAM BOT VAZIFASI:
+— Jamoalarni ro'yxatdan o'tkazish
+— Har bosqichda selfi/video qabul qilish
+— Nazoratchi (admin) tasdiqlashi
+— Tasdiqlangach keyingi bosqich manzilini yuborish
+— Real vaqtda ball jadvali (leaderboard) ko'rsatish
+— Vaqtni hisoblash (taymer)
+
+O'YIN JARAYONI (qadam-baqadam):
+1. Jamoa Telegram botga /start bosadi → ro'yxatdan o'tadi
+2. Bot birinchi bosqich manzilini + xaritadagi nuqtani yuboradi
+3. Jamoa hududga boradi → Marbleverse ochadi → AR sharni topadi
+4. Shar ichidan topshiriq va maxfiy kod chiqadi
+5. Jamoa topshiriqni bajaradi (selfi, savol, video)
+6. Selfi/video + maxfiy kodni Telegram botga yuboradi
+7. Nazoratchi (admin) tekshiradi → tasdiqlaydi yoki rad etadi
+8. Tasdiqlansa → ball qo'shiladi + keyingi bosqich manzili yuboriladi
+9. Rad etilsa → sabab yoziladi, jamoa qayta bajaradi
+
+================================================================================
+3. MARSHRUT TIZIMI (TARTIBI)
+================================================================================
+
+TAVSIYA: AYLANMA MARSHRUT (Rotating Routes)
+— Jamoalar to'planib qolmasligi uchun har jamoa turli bosqichdan boshlaydi
+— 5 ta bosqich, 5 xil boshlang'ich nuqta
+
+Misol:
+  A jamoa:  1 → 2 → 3 → 4 → 5
+  B jamoa:  2 → 3 → 4 → 5 → 1
+  C jamoa:  3 → 4 → 5 → 1 → 2
+  D jamoa:  4 → 5 → 1 → 2 → 3
+  E jamoa:  5 → 1 → 2 → 3 → 4
+
+Telegram bot har jamoaga o'z marshrutini avtomatik yuboradi.
+
+================================================================================
+4. BOSQICHLAR — BATAFSIL TOPSHIRIQLAR
+================================================================================
+
+--------------------------------------------------------------------------------
+BOSQICH 1: AXBOROT MARKAZI OLDI
+--------------------------------------------------------------------------------
+Lokatsiya:     Axborot markazi binosi oldidagi maydon
+AR Marble:     Bino oldidagi daraxt yoniga joylashtiriladi
+Maxfiy kod:    "BILIM2024"
+Ball:          2 ball
+
+TOPSHIRIQLAR:
+  [1] GURUH SELFISI
+      — Barcha jamoa a'zolari rasmda bo'lishi shart
+      — Orqa fonda bino aniq ko'rinishi kerak
+      — Rasmni Telegram botga yuborish
+
+  [2] MANTIQIY SAVOLLAR (5 ta — og'zaki yoki botga yozma)
+      Savol 1: Bu tarixiy bino qachon qurilgan?
+      Savol 2: Binoning me'mori kim?
+      Savol 3: Bino dastlab nima maqsadda qurilgan?
+      Savol 4: Bino nechta qavatdan iborat?
+      Savol 5: Bino atrofida nechta ustun bor?
+
+      (Savollar tarixiy joyga qarab o'zgartiriladi)
+
+QABUL MEZONLARI:
+  ✓ Selfida barcha a'zolar + bino ko'rinadi
+  ✓ Kamida 3/5 savolga to'g'ri javob
+  ✗ Rad: a'zo yetishmasa, bino ko'rinmasa, 2 dan kam to'g'ri javob
+
+--------------------------------------------------------------------------------
+BOSQICH 2: TARIXIY XIYOBON
+--------------------------------------------------------------------------------
+Lokatsiya:     Daraxtlar qatori / xiyobon
+AR Marble:     Xiyobondagi eng katta daraxt yoniga joylashtiriladi
+Maxfiy kod:    "TABIAT2024"
+Ball:          3 ball
+
+TOPSHIRIQLAR:
+  [1] JAMOAVIY SAKRASH SELFISI
+      — Barcha a'zolar havoda bo'lishi kerak (sakrash paytida suratga olinadi)
+      — Orqa fonda kamida 3 ta daraxt ko'rinishi shart
+      — Rasmni Telegram botga yuborish
+
+  [2] TARIXIY FAKTLAR (10 ta fakt aytish)
+      — Hudud/bino/shahar haqida 10 ta fakt
+      — Video yozib Telegram botga yuborish (60 soniyagacha)
+      — Har bir to'g'ri fakt hisobga olinadi
+
+QABUL MEZONLARI:
+  ✓ Sakrash selfisida hamma havoda + daraxtlar ko'rinadi
+  ✓ Kamida 7/10 fakt to'g'ri aytilgan
+  ✗ Rad: oyoqlar yerda, daraxt ko'rinmasa, 6 dan kam fakt
+
+--------------------------------------------------------------------------------
+BOSQICH 3: ASOSIY BINO KIRISH QISMI
+--------------------------------------------------------------------------------
+Lokatsiya:     Asosiy bino eshigi / peshtoqi
+AR Marble:     Kirish eshigi yonidagi ustun oldiga joylashtiriladi
+Maxfiy kod:    "ILMDARVO"
+Ball:          2 ball
+
+TOPSHIRIQLAR:
+  [1] TARTIBLI JAMOA SELFISI
+      — A'zolar qator bo'lib turishi kerak
+      — Bino nomi yoki yozuvi rasmda ko'rinishi shart
+      — Rasmni Telegram botga yuborish
+
+  [2] TEZKOR BILIM SINOVI (video yozib yuborish)
+      — 10 soniyada 5 ta fan nomini aytish (matematika, fizika, ...)
+      — 15 soniyada ingliz tilida 5 ta gap aytish (tarixiy joy haqida)
+      — Ikkalasi bitta videoda yoziladi
+
+QABUL MEZONLARI:
+  ✓ Selfida bino nomi/yozuvi aniq ko'rinadi
+  ✓ 5 ta fan nomi to'g'ri aytilgan
+  ✓ 5 ta inglizcha gap aytilgan (grammatik xato hisobga olinmaydi)
+  ✗ Rad: bino nomi ko'rinmasa, vaqt oshsa, 3 dan kam to'g'ri javob
+
+--------------------------------------------------------------------------------
+BOSQICH 4: SPORT MAYDONI
+--------------------------------------------------------------------------------
+Lokatsiya:     Sport maydoni / stadion
+AR Marble:     Darvoza yoniga joylashtiriladi
+Maxfiy kod:    "SPORT2024"
+Ball:          3 ball
+
+TOPSHIRIQLAR:
+  [1] ESTAFETA YUGURISH VIDEOSI
+      — Jamoa a'zolari navbatma-navbat 20 metr masofani yuguradi
+      — Oxirgi yuguruvchi "TUGATDIK!" deb baqiradi
+      — Videoni Telegram botga yuborish (30 soniyagacha)
+
+  [2] JAMOAVIY MASHQ SELFISI
+      — Barcha a'zolar bitta mashq holatida (masalan, planka, squat)
+      — Sport maydoni aniq ko'rinishi kerak
+      — Rasmni Telegram botga yuborish
+
+QABUL MEZONLARI:
+  ✓ Videoda barcha a'zolar yugurgan
+  ✓ Selfida mashq holati + maydon ko'rinadi
+  ✗ Rad: a'zo yugurmasdan qolsa, maydon ko'rinmasa
+
+--------------------------------------------------------------------------------
+BOSQICH 5: OSHXONA / TARIXIY BINO ATROFI
+--------------------------------------------------------------------------------
+Lokatsiya:     Oshxona yoki tarixiy bino yonidagi maydon
+AR Marble:     Oshxona eshigi yoniga joylashtiriladi
+Maxfiy kod:    "FINAL2024"
+Ball:          2 ball
+
+TOPSHIRIQLAR:
+  [1] KULGILI JAMOAVIY SELFI
+      — Jamoa a'zolari kulgili poza olishi kerak
+      — Oshxona/bino peshlavhasi yoki nomi ko'rinishi shart
+      — Rasmni Telegram botga yuborish
+
+  [2] SHIFRLANGAN SO'ZNI TOPISH
+      — Marble ichida shifrlangan matn bo'ladi
+      — Misol: "18-1-26-9-13" → har raqam alifbo tartibida harf
+        (R=18, A=1, Z=26, I=9, M=13 → "RAZIM")
+      — Javobni Telegram botga yozish
+
+QABUL MEZONLARI:
+  ✓ Selfida kulgili poza + bino nomi ko'rinadi
+  ✓ Shifr to'g'ri yechilgan
+  ✗ Rad: bino ko'rinmasa, shifr noto'g'ri
+
+================================================================================
+5. BALL TIZIMI VA G'OLIB ANIQLASH
+================================================================================
+
+BALL JADVALI:
+  Bosqich 1 (Axborot markazi):     2 ball
+  Bosqich 2 (Xiyobon):             3 ball
+  Bosqich 3 (Asosiy bino):         2 ball
+  Bosqich 4 (Sport maydoni):       3 ball
+  Bosqich 5 (Oshxona):             2 ball
+  ─────────────────────────────────────────
+  MAKSIMUM JAMI:                   12 ball
+
+BALL BERISH QOIDASI:
+  — Bajardi = to'liq ball
+  — Bajarmadi = 0 ball
+  — Qisman bajarish yo'q (pass/fail tizimi)
+
+G'OLIB ANIQLASH FORMULASI:
+  1-mezon: ENG KO'P BALL (12 balldan)
+  2-mezon: TENG BALL BO'LSA → eng tez tugatgan jamoa g'olib
+  3-mezon: YANA TENG BO'LSA → qo'shimcha savol (tiebreaker)
+
+VAQT HISOBI:
+  — Bot /start bosilgan vaqtdan boshlab hisoblaydi
+  — Oxirgi bosqich tasdiqlangan vaqtda to'xtaydi
+  — Umumiy vaqt = tugatish_vaqti - boshlash_vaqti
+
+TIEBREAKER SAVOL (ball ham, vaqt ham teng bo'lsa):
+  "Bu tarixiy joyda yillar davomida nechta odam tahsil olgan?"
+  — Eng yaqin javob bergan jamoa g'olib
+
+================================================================================
+6. TELEGRAM BOT FUNKSIYALARI
+================================================================================
+
+JAMOA UCHUN KOMANDALAR:
+  /start              — Botni ishga tushirish, ro'yxatdan o'tish
+  /register [nom]     — Jamoa nomini ro'yxatdan o'tkazish
+  /members            — Jamoa a'zolarini kiritish
+  /myscore            — Joriy ball va o'rinni ko'rish
+  /leaderboard        — Barcha jamoalar reytingi
+  /time               — Qolgan vaqtni ko'rish
+  /help               — Yordam
+
+NAZORATCHI (ADMIN) UCHUN:
+  /admin               — Admin panelga kirish
+  /approve [jamoa_id]  — Topshiriqni tasdiqlash → ball qo'shiladi
+  /reject [jamoa_id] [sabab] — Rad etish → sabab bilan qaytarish
+  /broadcast [xabar]   — Barcha jamoalarga xabar yuborish
+  /standings           — To'liq natijalar jadvali
+  /endgame             — O'yinni yakunlash
+
+BOT ISHLASH JARAYONI:
+  1. Jamoa /register "Sheryuraklar" → bot ro'yxatga oladi
+  2. Admin /startgame → barcha jamoalarga 1-bosqich yuboriladi
+  3. Jamoa selfi/video yuboradi + maxfiy kodni yozadi
+  4. Admin /approve → ball qo'shiladi + keyingi bosqich yuboriladi
+  5. 5-bosqich tasdiqlanganda → "Tabriklaymiz! Barcha bosqichlar tugadi!"
+  6. Admin /endgame → yakuniy natijalar e'lon qilinadi
+
+BOT YUBORADIGAN XABARLAR NAMUNASI:
+
+  [Bosqich boshida]:
+  ┌──────────────────────────────────────┐
+  │  📍 2-BOSQICH: TARIXIY XIYOBON      │
+  │                                      │
+  │  Manzil: [xarita havolasi]           │
+  │  Ball: 3 ball                        │
+  │                                      │
+  │  Topshiriqlar:                       │
+  │  1. Jamoaviy sakrash selfisi         │
+  │     (3 ta daraxt ko'rinsin)          │
+  │  2. 10 ta tarixiy fakt aytish        │
+  │     (video yozib yuboring)           │
+  │                                      │
+  │  Marbleverse ochib AR sharni toping! │
+  │  Shar ichidagi maxfiy kodni ham      │
+  │  yuboring.                           │
+  └──────────────────────────────────────┘
+
+  [Tasdiqlanganda]:
+  ┌──────────────────────────────────────┐
+  │  ✅ 2-BOSQICH TASDIQLANDI!           │
+  │  +3 ball — Jami: 5/12               │
+  │  Vaqt: 00:23:15                      │
+  │  Keyingi bosqich yuklanmoqda...      │
+  └──────────────────────────────────────┘
+
+  [Rad etilganda]:
+  ┌──────────────────────────────────────┐
+  │  ❌ TOPSHIRIQ RAD ETILDI             │
+  │  Sabab: Selfida 2 ta a'zo            │
+  │  ko'rinmayapti.                      │
+  │  Qaytadan yuboring!                  │
+  └──────────────────────────────────────┘
+
+================================================================================
+7. NAZORATCHI (ADMIN) YO'RIQNOMASI
+================================================================================
+
+O'YINDAN OLDIN (1 kun avval):
+  □ Marbleverse appda barcha 5 ta lokatsiyaga Marble joylash
+  □ Har Marble ichiga topshiriq matni + maxfiy kod yozish
+  □ Telegram botni sozlash va test qilish
+  □ Barcha lokatsiyalarni tekshirish (GPS aniqlik, internet)
+  □ Har bosqichda 1 ta nazoratchi tayinlash (jami 5 ta)
+  □ Zaxira telefon va powerbank tayyorlash
+
+O'YIN KUNIDA:
+  □ Jamoalarni ro'yxatdan o'tkazish (30 daqiqa oldin)
+  □ Qoidalarni tushuntirish
+  □ Marbleverse appni o'rnatishni tekshirish
+  □ /startgame bilan o'yinni boshlash
+
+TASDIQLASH MEZONLARI (nazoratchi uchun checklist):
+  Selfi tekshirish:
+    □ Barcha a'zolar rasmda bormi?
+    □ Kerakli fon (bino/daraxt/maydon) ko'rinayaptimi?
+    □ Rasm aniq va sifatlimi?
+
+  Video tekshirish:
+    □ Topshiriq to'liq bajarilganmi?
+    □ Vaqt chegarasiga mos kelayaptimi?
+    □ Barcha a'zolar ishtirok etganmi?
+
+  Maxfiy kod tekshirish:
+    □ Kod to'g'ri yozilganmi? (katta-kichik harf farqi yo'q)
+
+================================================================================
+8. VAQT REGLAMENTI
+================================================================================
+
+  00:00 — 00:15    Yig'ilish, ro'yxatdan o'tish, qoidalar tushuntirish
+  00:15 — 00:20    Marbleverse app o'rnatish/tekshirish
+  00:20 — 00:25    Jamoalar taqsimlanadi, marshrut yuboriladi
+  00:25             /startgame — O'YIN BOSHLANDI!
+  00:25 — 01:25    O'yin davom etadi (60 daqiqa)
+  01:25             VAQT TUGADI — barcha jamoalar to'xtaydi
+  01:25 — 01:35    Natijalar hisoblanadi, tiebreaker (kerak bo'lsa)
+  01:35 — 01:50    Taqdirlash marosimi
+
+MUHIM: 60 daqiqa ichida tugatmagan jamoa qaysi bosqichda bo'lsa,
+o'sha paytgacha to'plagan bali hisoblanadi.
+
+================================================================================
+9. KERAKLI JIHOZLAR VA TAYYORGARLIK
+================================================================================
+
+HAR BIR JAMOA UCHUN:
+  — Kamida 1 ta telefon (Marbleverse app o'rnatilgan)
+  — Kamida 1 ta telefon (Telegram bot uchun)
+  — Internet aloqasi (mobil internet)
+
+TASHKILOTCHILAR UCHUN:
+  — 5 ta nazoratchi telefoni
+  — Telegram bot server (ishlab turgan)
+  — Zaxira powerbank (5-10 dona)
+  — Karnay / megafon (boshlanish/yakunlash uchun)
+  — Sovg'alar (1, 2, 3-o'rin uchun)
+  — Sertifikatlar (barcha ishtirokchilar uchun)
+  — Suv va yengil taom
+
+TEXNIK TAYYORGARLIK:
+  — Barcha lokatsiyalarda internet borligini tekshirish
+  — Marbleverse marble'larni 1 kun oldin joylashtirish va test qilish
+  — Telegram botni to'liq test qilish (register → approve → next stage)
+  — Zaxira reja: internet bo'lmasa → nazoratchi og'zaki kod beradi
+
+================================================================================
+10. FAVQULODDA HOLATLAR
+================================================================================
+
+INTERNET YO'QOLSA:
+  → Nazoratchi qo'lda maxfiy kodni beradi
+  → Selfi/video keyinroq yuboriladi
+  → Ball qo'lda hisoblanadi
+
+MARBLEVERSE ISHLAMASA:
+  → Nazoratchi lokatsiyada turadi va topshiriqni og'zaki beradi
+  → Maxfiy kod qog'ozda yozilgan holda tayyor turadi
+
+JAMOA A'ZOSI KASAL / KETIB QOLSA:
+  → Kamida 2 kishi qolsa, jamoa davom etadi
+  → 1 kishi qolsa, boshqa jamoaga qo'shiladi
+
+VAQT YETMASA:
+  → Admin /broadcast "10 daqiqa qoldi!" yuboradi
+  → Vaqt tugashi bilan qayerda bo'lsa o'sha ball hisoblanadi
+
+================================================================================
+11. MUKOFOTLASH TIZIMI
+================================================================================
+
+  1-O'RIN:  Bosh sovg'a + sertifikat + "Sirli Sharlar Chempioni" unvoni
+  2-O'RIN:  Sovg'a + sertifikat
+  3-O'RIN:  Sovg'a + sertifikat
+  BARCHA:   Ishtirok sertifikati
+
+MAXSUS NOMINATSIYALAR (ixtiyoriy):
+  — "Eng ijodiy selfi" — eng chiroyli/kulgili selfi olgan jamoa
+  — "Eng tezkor jamoa" — eng tez tugatgan (ball qat'iy nazar)
+  — "Jamoaviy ruh" — eng do'stona jamoa (nazoratchilar tanlaydi)
+
+================================================================================
