@@ -258,31 +258,301 @@ async def cmd_time(message: Message):
 @router.message(Command("help"))
 async def cmd_help(message: Message):
     if is_admin(message.from_user.id):
+        admin_kb = InlineKeyboardMarkup(inline_keyboard=[
+            [
+                InlineKeyboardButton(text="🚀 O'yinni boshlash", callback_data="cmd:startgame"),
+                InlineKeyboardButton(text="🏁 O'yinni yakunlash", callback_data="cmd:endgame"),
+            ],
+            [
+                InlineKeyboardButton(text="📥 Kutayotgan topshiriqlar", callback_data="cmd:pending"),
+                InlineKeyboardButton(text="📊 To'liq natijalar", callback_data="cmd:standings"),
+            ],
+            [
+                InlineKeyboardButton(text="📢 Hammaga xabar", callback_data="cmd:broadcast"),
+                InlineKeyboardButton(text="🏆 Natijalar jadvali", callback_data="cmd:leaderboard"),
+            ],
+            [
+                InlineKeyboardButton(text="━━━━ 👥 JAMOA ━━━━", callback_data="cmd:noop"),
+            ],
+            [
+                InlineKeyboardButton(text="📝 Ro'yxatdan o'tish", callback_data="cmd:start"),
+                InlineKeyboardButton(text="📮 Topshiriq yuborish", callback_data="cmd:submit"),
+            ],
+            [
+                InlineKeyboardButton(text="📊 Ballarim", callback_data="cmd:myscore"),
+                InlineKeyboardButton(text="⏳ Qolgan vaqt", callback_data="cmd:time"),
+            ],
+        ])
         await message.answer(
-            "👨‍💼 <b>ADMIN BUYRUQLARI:</b>\n"
-            "/startgame — O'yinni boshlash\n"
-            "/endgame — O'yinni yakunlash\n"
-            "/pending — Kutayotgan topshiriqlar\n"
-            "/standings — To'liq natijalar\n"
-            "/broadcast [xabar] — Hammaga xabar\n\n"
-            "👥 <b>JAMOA BUYRUQLARI:</b>\n"
-            "/start — Ro'yxatdan o'tish\n"
-            "/myscore — Ballaringiz\n"
-            "/leaderboard — Natijalar jadvali\n"
-            "/time — Qolgan vaqt\n"
-            "/submit — Topshiriq yuborish\n"
-            "/help — Yordam"
+            "👨‍💼 <b>ADMIN PANEL</b>\n\n"
+            "Quyidagi tugmalardan kerakli buyruqni tanlang:",
+            reply_markup=admin_kb,
         )
     else:
+        team_kb = InlineKeyboardMarkup(inline_keyboard=[
+            [
+                InlineKeyboardButton(text="📝 Ro'yxatdan o'tish", callback_data="cmd:start"),
+                InlineKeyboardButton(text="📮 Topshiriq yuborish", callback_data="cmd:submit"),
+            ],
+            [
+                InlineKeyboardButton(text="📊 Ballarim", callback_data="cmd:myscore"),
+                InlineKeyboardButton(text="🏆 Natijalar jadvali", callback_data="cmd:leaderboard"),
+            ],
+            [
+                InlineKeyboardButton(text="⏳ Qolgan vaqt", callback_data="cmd:time"),
+                InlineKeyboardButton(text="❓ Yordam", callback_data="cmd:help"),
+            ],
+        ])
         await message.answer(
-            "🎮 <b>BUYRUQLAR:</b>\n\n"
-            "/start — Ro'yxatdan o'tish\n"
-            "/myscore — Ballaringiz\n"
-            "/leaderboard — Natijalar jadvali\n"
-            "/time — Qolgan vaqt\n"
-            "/submit — Topshiriq yuborish\n"
-            "/help — Yordam"
+            "🎮 <b>BUYRUQLAR MENYUSI</b>\n\n"
+            "Quyidagi tugmalardan kerakli buyruqni tanlang:",
+            reply_markup=team_kb,
         )
+
+
+# ============================================================
+# CALLBACK: BUYRUQ TUGMALARI
+# ============================================================
+
+@router.callback_query(F.data == "cmd:noop")
+async def callback_noop(callback: CallbackQuery):
+    await callback.answer()
+
+
+@router.callback_query(F.data == "cmd:startgame")
+async def callback_startgame(callback: CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("Sizda ruxsat yo'q!", show_alert=True)
+        return
+    await callback.answer("🚀 O'yin boshlanmoqda...")
+    await db.set_game_active(True)
+    teams = await db.get_all_teams()
+    if not teams:
+        await callback.message.answer("❌ Hech qanday jamoa ro'yxatdan o'tmagan!")
+        return
+    await callback.message.answer(
+        f"🚀 <b>O'YIN BOSHLANDI!</b>\n"
+        f"Jamoalar soni: {len(teams)}\n"
+        f"Vaqt: {GAME_DURATION_MINUTES} daqiqa"
+    )
+    for team in teams:
+        await db.start_team_timer(team["chat_id"])
+        updated_team = await db.get_team_by_chat(team["chat_id"])
+        try:
+            await bot.send_message(
+                team["chat_id"],
+                f"🚀 <b>O'YIN BOSHLANDI!</b>\n\n"
+                f"Vaqt: {GAME_DURATION_MINUTES} daqiqa\n"
+                f"Marshrut: {' → '.join(str(s) for s in team['route'])}\n\n"
+                f"Marbleverse appni oching va birinchi nuqtaga yuring!"
+            )
+            await send_stage_info(team["chat_id"], updated_team)
+        except Exception as e:
+            logger.error(f"Jamoa {team['name']} ga yuborishda xato: {e}")
+
+
+@router.callback_query(F.data == "cmd:endgame")
+async def callback_endgame(callback: CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("Sizda ruxsat yo'q!", show_alert=True)
+        return
+    await callback.answer("🏁 O'yin yakunlanmoqda...")
+    await db.set_game_active(False)
+    teams = await db.get_all_teams()
+    leaderboard = build_leaderboard(teams)
+    result_text = f"🏁 <b>O'YIN YAKUNLANDI!</b>\n\n{leaderboard}\n\n"
+    if teams:
+        winner = teams[0]
+        result_text += f"🏆 G'olib: <b>{winner['name']}</b> — {winner['score']} ball!"
+    for team in teams:
+        try:
+            await bot.send_message(team["chat_id"], result_text)
+        except Exception:
+            pass
+    await callback.message.answer(result_text)
+
+
+@router.callback_query(F.data == "cmd:pending")
+async def callback_pending(callback: CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("Sizda ruxsat yo'q!", show_alert=True)
+        return
+    await callback.answer("📥 Kutayotgan topshiriqlar...")
+    submissions = await db.get_pending_submissions()
+    if not submissions:
+        await callback.message.answer("✅ Kutayotgan topshiriqlar yo'q.")
+        return
+    for sub in submissions:
+        stage = STAGES[sub["stage_number"]]
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [
+                InlineKeyboardButton(text="✅ Tasdiqlash", callback_data=f"approve:{sub['id']}"),
+                InlineKeyboardButton(text="❌ Rad etish", callback_data=f"reject:{sub['id']}"),
+            ]
+        ])
+        await callback.message.answer(
+            f"📥 #{sub['id']} — <b>{sub['team_name']}</b>\n"
+            f"Bosqich: {sub['stage_number']} — {stage['name']}\n"
+            f"Kod: <code>{sub['secret_code']}</code>",
+            reply_markup=kb,
+        )
+        if sub["photo_file_id"]:
+            await bot.send_photo(callback.message.chat.id, sub["photo_file_id"])
+        if sub["video_file_id"]:
+            await bot.send_video(callback.message.chat.id, sub["video_file_id"])
+
+
+@router.callback_query(F.data == "cmd:standings")
+async def callback_standings(callback: CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("Sizda ruxsat yo'q!", show_alert=True)
+        return
+    await callback.answer("📊 Natijalar yuklanmoqda...")
+    teams = await db.get_all_teams()
+    if not teams:
+        await callback.message.answer("Hali jamoalar yo'q.")
+        return
+    lines = ["📊 <b>TO'LIQ NATIJALAR</b>\n"]
+    for i, t in enumerate(teams, 1):
+        elapsed = ""
+        if t["is_finished"]:
+            elapsed = format_time(t["finished_at"] - t["started_at"])
+        elif t["started_at"]:
+            elapsed = format_time(time.time() - t["started_at"])
+        finished = "✅ TUGATDI" if t["is_finished"] else f"Bosqich {t['current_stage_index']}/5"
+        members = ", ".join(t["members"]) if t["members"] else "—"
+        lines.append(
+            f"{i}. <b>{t['name']}</b>\n"
+            f"   Ball: {t['score']}/12 | {finished}\n"
+            f"   Vaqt: {elapsed or '—'}\n"
+            f"   A'zolar: {members}\n"
+        )
+    await callback.message.answer("\n".join(lines))
+
+
+@router.callback_query(F.data == "cmd:broadcast")
+async def callback_broadcast(callback: CallbackQuery):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("Sizda ruxsat yo'q!", show_alert=True)
+        return
+    await callback.answer()
+    await callback.message.answer(
+        "📢 <b>BROADCAST</b>\n\n"
+        "Xabar yuborish uchun quyidagi formatda yozing:\n"
+        "<code>/broadcast Xabar matni</code>"
+    )
+
+
+@router.callback_query(F.data == "cmd:leaderboard")
+async def callback_leaderboard(callback: CallbackQuery):
+    await callback.answer("🏆 Natijalar yuklanmoqda...")
+    teams = await db.get_all_teams()
+    await callback.message.answer(build_leaderboard(teams))
+
+
+@router.callback_query(F.data == "cmd:start")
+async def callback_start(callback: CallbackQuery):
+    await callback.answer()
+    team = await db.get_team_by_chat(callback.message.chat.id)
+    if team:
+        await callback.message.answer(
+            f"Siz allaqachon <b>{team['name']}</b> jamoasi sifatida ro'yxatdan o'tgansiz.\n"
+            f"Joriy ball: {team['score']}/12"
+        )
+    else:
+        await callback.message.answer(
+            "📝 Ro'yxatdan o'tish uchun <b>/start</b> buyrug'ini yuboring."
+        )
+
+
+@router.callback_query(F.data == "cmd:submit")
+async def callback_submit(callback: CallbackQuery):
+    await callback.answer()
+    game_active = await db.get_game_active()
+    if not game_active:
+        await callback.message.answer("⏳ O'yin hali boshlanmagan. Kuting...")
+        return
+    team = await db.get_team_by_chat(callback.message.chat.id)
+    if not team:
+        await callback.message.answer("Avval /start bilan ro'yxatdan o'ting.")
+        return
+    if team["is_finished"]:
+        await callback.message.answer("✅ Siz barcha bosqichlarni tugatgansiz! Natijalarni kuting.")
+        return
+    await callback.message.answer(
+        "📮 Topshiriq yuborish uchun <b>/submit</b> buyrug'ini yuboring."
+    )
+
+
+@router.callback_query(F.data == "cmd:myscore")
+async def callback_myscore(callback: CallbackQuery):
+    await callback.answer("📊 Ballar yuklanmoqda...")
+    team = await db.get_team_by_chat(callback.message.chat.id)
+    if not team:
+        await callback.message.answer("Siz hali ro'yxatdan o'tmagan. /start bosing.")
+        return
+    elapsed = ""
+    if team["started_at"]:
+        if team["is_finished"]:
+            elapsed = format_time(team["finished_at"] - team["started_at"])
+        else:
+            elapsed = format_time(time.time() - team["started_at"])
+    stage_info = ""
+    if team["is_finished"]:
+        stage_info = "✅ Barcha bosqichlar tugatildi!"
+    else:
+        stage = get_current_stage(team)
+        if stage:
+            stage_info = f"📍 Joriy: {stage['name']}"
+    await callback.message.answer(
+        f"📊 <b>{team['name']}</b>\n\n"
+        f"Ball: <b>{team['score']}/12</b>\n"
+        f"Bosqich: {team['current_stage_index']}/5\n"
+        f"{stage_info}\n"
+        f"Vaqt: {elapsed or 'Boshlanmagan'}"
+    )
+
+
+@router.callback_query(F.data == "cmd:time")
+async def callback_time(callback: CallbackQuery):
+    await callback.answer("⏳ Vaqt yuklanmoqda...")
+    team = await db.get_team_by_chat(callback.message.chat.id)
+    if not team or not team["started_at"]:
+        await callback.message.answer("O'yin hali boshlanmagan.")
+        return
+    elapsed = time.time() - team["started_at"]
+    remaining = max(0, GAME_DURATION_MINUTES * 60 - elapsed)
+    if remaining == 0:
+        await callback.message.answer("⏰ Vaqt tugagan!")
+    else:
+        await callback.message.answer(
+            f"⏱ O'tgan vaqt: {format_time(elapsed)}\n"
+            f"⏳ Qolgan vaqt: {format_time(remaining)}"
+        )
+
+
+@router.callback_query(F.data == "cmd:help")
+async def callback_help(callback: CallbackQuery):
+    await callback.answer()
+    team_kb = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="📝 Ro'yxatdan o'tish", callback_data="cmd:start"),
+            InlineKeyboardButton(text="📮 Topshiriq yuborish", callback_data="cmd:submit"),
+        ],
+        [
+            InlineKeyboardButton(text="📊 Ballarim", callback_data="cmd:myscore"),
+            InlineKeyboardButton(text="🏆 Natijalar jadvali", callback_data="cmd:leaderboard"),
+        ],
+        [
+            InlineKeyboardButton(text="⏳ Qolgan vaqt", callback_data="cmd:time"),
+            InlineKeyboardButton(text="❓ Yordam", callback_data="cmd:help"),
+        ],
+    ])
+    await callback.message.answer(
+        "🎮 <b>BUYRUQLAR MENYUSI</b>\n\n"
+        "Quyidagi tugmalardan kerakli buyruqni tanlang:",
+        reply_markup=team_kb,
+    )
 
 
 # ============================================================
